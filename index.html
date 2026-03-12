@@ -3,129 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CCTV Stream</title>
+
+<title>CCTV Player</title>
 
 <style>
+
 html,body{
 margin:0;
 padding:0;
-background:#000;
-width:100%;
+background:black;
 height:100%;
 overflow:hidden;
 }
 
-#player{
+#frame{
 position:absolute;
 top:0;
 left:0;
 width:100vw;
 height:100vh;
-object-fit:contain;
-background:#000;
-display:none;
+border:none;
 }
 
-#message{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-color:white;
-font-family:sans-serif;
-font-size:1.4em;
-text-align:center;
-}
 </style>
+
 </head>
 
 <body>
 
-<div id="message">Memuat stream CCTV...</div>
-<img id="player">
+<iframe id="frame"></iframe>
 
 <script>
 
 const hash = window.location.hash.substring(1);
-const streamUrl = decodeURIComponent(hash);
 
-const img = document.getElementById("player");
-const msg = document.getElementById("message");
+function fullscreen(){
 
-let loaded = false;
-
-function enterFullscreen(){
-
-const elem = document.documentElement;
+const elem=document.documentElement;
 
 if(elem.requestFullscreen){
 elem.requestFullscreen();
-}else if(elem.webkitRequestFullscreen){
+}
+else if(elem.webkitRequestFullscreen){
 elem.webkitRequestFullscreen();
-}else if(elem.msRequestFullscreen){
-elem.msRequestFullscreen();
 }
 
 }
 
-function startStream(url){
+if(!hash){
 
-// anti cache supaya stream selalu reload
-const finalUrl = url + (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-
-img.src = finalUrl;
-
-}
-
-// jika frame pertama berhasil diterima
-img.onload = function(){
-
-if(!loaded){
-
-loaded = true;
-
-msg.style.display = "none";
-img.style.display = "block";
-
-}
-
-};
-
-// jika error
-img.onerror = function(){
-
-msg.innerHTML = "CCTV sedang Offline<br>atau tidak dapat diakses";
-
-img.style.display = "none";
-
-};
-
-// timeout jika stream tidak muncul
-setTimeout(function(){
-
-if(!loaded){
-
-msg.innerHTML = "Stream tidak merespon";
-
-}
-
-},8000);
-
-
-// validasi url
-if(!streamUrl || !streamUrl.startsWith("http")){
-
-msg.innerHTML="URL stream tidak valid<br>Gunakan format:<br>#https://link-stream";
+document.body.innerHTML="<div style='color:white;text-align:center;margin-top:40vh;font-family:sans-serif'>URL stream tidak ditemukan</div>";
 
 }else{
 
-startStream(streamUrl);
+const id = hash.split("/").pop();
 
-window.addEventListener("load",function(){
+const url = "https://cctv.banyuasinkab.go.id/#/stream/"+id;
 
-setTimeout(enterFullscreen,500);
+document.getElementById("frame").src = "https://cctv.banyuasinkab.go.id";
 
-});
+setTimeout(fullscreen,500);
 
 }
 
